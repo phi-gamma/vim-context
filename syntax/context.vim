@@ -17,7 +17,10 @@ syn match  contextComment    '\\\@!%.*' display contains=contextTodo
 
 syn match  contextComment    '^%[CDM]\s.*' contains=ALLBUT,contextComment,contextArgument contains=@Spell
 
-syn match   contextStatement  display '\\[a-zA-Z@!_:]\+'
+syn match   contextStatement  display '\\[a-zA-Z@!?_:]\+'
+syn match   contextTEXArg     display '#[0-9]'      " TEX
+syn match   contextMkVIArg    display '#[a-zA-Z]\+' " short
+syn match   contextMkVIArg    display '#{[^}]\+}'   " long
 
 syn match   contextBlockDelim display '\\\%(start\|stop\|place\)\a\+\_s*' nextgroup=contextArgument
 
@@ -36,33 +39,33 @@ syn region  contextEscaped    display matchgroup=contextPreProc
 
 syn region  contextEscaped    extend matchgroup=contextPreProc
                               \ start='\\start\z(\a*\%(typing\|typen\)\)'
-                              \ end='\\stop\z1' 
+                              \ end='\\stop\z1'
 "                              \ skip='^%[CDM] '
 
 syn match  contextTextSpecial     '\\\%(cite\|date\|pagereference\|eqref\|about\)\>' nextgroup=contextArgument
 
 syn match  contextTextSpecial  '\\\%(in\|at\)\>\_s*{\=\a*}\=\_s*'he=s+3 nextgroup=contextArgument
 
-syn region contextArgument    matchgroup=contextDelimiter 
+syn region contextArgument    matchgroup=contextDelimiter
           \ nextgroup=contextArgument
           \ start='\_s*\[' skip='{.\{-\}].\{-}}' end=']\_s*' contained
           \ contains=contextGroup,contextComment
 
 syn match  contextSpecial     '\\\%(infull\|executesystemcommand\)' nextgroup=contextGroup
 
-syn region contextGroup       matchgroup=contextDelimiter 
-                              \ start='{' skip='\\}' end='}' 
+syn region contextGroup       matchgroup=contextDelimiter
+                              \ start='{' skip='\\}' end='}'
                               \ contained
                               \ contains=contextStatement
 
 syn region  contextMath       matchgroup=contextMath start='\$' end='\$'
                               \ contains=contextStatement,contextIdentifier,contextSpecial,contextComment,contextMathtext,contextEscaped
 
-syn region  contextMath       matchgroup=contextIdentifier 
+syn region  contextMath       matchgroup=contextIdentifier
                               \ start='\\start\z([sm][pd]\)\=formula' end='\\stop\z1formula'
                               \ contains=contextIdentifier,contextStatement,contextSpecial,contextComment,contextMathtext,contextEscaped
 
-syn region contextMathtext    matchgroup=contextIdentifier 
+syn region contextMathtext    matchgroup=contextIdentifier
       \ start="\\\%(inter\)\=text\>{" end="}"
       \ contains=contextMath,contextIdentifier,contextStatement,contextSpecial,contextComment
       \ contained
@@ -74,17 +77,18 @@ syn match   contextBuiltin    '\\\%(newif\|def\|gdef\|global\|let\|glet\|bgroup\
 
 syn match   contextBuiltin    '\\\%(begingroup\|egroup\|endgroup\|long\|catcode\)\>'
 
-syn match   contextBuiltin    '\\\%(unprotect\|unexpanded\|if\a\+\|else\|fi\|ifx\)\>' 
+syn match   contextBuiltin    '\\\%(unprotect\|unexpanded\|if\a\+\|else\|fi\|ifx\)\>'
+syn match   contextBuiltin    '\\\%(expandafter\|noexpand\)\>'
 
-syn match   contextBuiltin    '\\\%(futurelet\|protect\|appendtoks\)\>' 
-syn match   contextBuiltin    '\\\%([lr]q\)\>' 
+syn match   contextBuiltin    '\\\%(futurelet\|protect\|appendtoks\)\>'
+syn match   contextBuiltin    '\\\%([lr]q\)\>'
 
 syn match   contextPreProc    '^\s*\\\%(component\|environment\|\%(start\|stop\)environment\|project\|product\).*$'
 
 syn match   contextIdentifier    '\\\%(setup\|define\|use\|enable\|disable\|setvariables\|setlayer\|framed\)\a*\_s*'
                               \ nextgroup=contextArgument
 
-syn match   contextPreProc    '^\s*\\input\s\+.*$' 
+syn match   contextPreProc    '^\s*\\input\s\+.*$'
 
 syn match   contextSectioning '\\\(chapter\|part\)\>' nextgroup=contextArgument
 syn match   contextSectioning '\\\%(sub\)*\(section\|subject\)\>' nextgroup=contextArgument
@@ -129,7 +133,7 @@ syn include @METAPOST syntax/metafun.vim
 unlet b:current_syntax
 
 
-syn region  metapost  matchgroup=contextIdentifier 
+syn region  metapost  matchgroup=contextIdentifier
                       \ start='\\start\z(\%(use\|reusabe\|usable\|unique\|static\)\=MP\%(code\|page\|inclusions\|graphic\|drawing\|run\|figure\|initializations\|definitions\)\)'
                       \ end='\\stop\z1'
                       \ contains=@METAPOST
@@ -164,6 +168,8 @@ syn sync match contextSync  grouphere context ""
 hi def link contextTodo       Todo
 hi def link contextComment    Comment
 hi def link contextEscaped    Special
+hi def link contextTEXArg     Function
+hi def link contextMkVIArg    Function
 hi def link contextStatement  Statement
 hi def link contextMath       String
 hi def link contextBlockDelim Keyword
